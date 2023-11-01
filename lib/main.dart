@@ -5,7 +5,7 @@ import 'package:home_widget_counter/dash_with_sign.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   // Set AppGroup Id. This is needed for iOS Apps to talk to their WidgetExtensions
-  await HomeWidget.setAppGroupId('group.es.antonborri.homeWidgetCounter');
+  await HomeWidget.setAppGroupId('group.singularityapp');
   // Register an Interactivity Callback. It is necessary that this method is static and public
   await HomeWidget.registerInteractivityCallback(interactiveCallback);
   runApp(const MyApp());
@@ -16,7 +16,7 @@ Future<void> main() async {
 @pragma('vm:entry-point')
 Future<void> interactiveCallback(Uri? uri) async {
   // Set AppGroup Id. This is needed for iOS Apps to talk to their WidgetExtensions
-  await HomeWidget.setAppGroupId('group.es.antonborri.homeWidgetCounter');
+  // await HomeWidget.setAppGroupId('group.es.antonborri.homeWidgetCounter');
 
   // We check the host of the uri to determine which action should be triggered.
   if (uri?.host == 'increment') {
@@ -53,11 +53,11 @@ Future<void> _clear() async {
 /// Stores [value] in the Widget Configuration
 Future<void> _sendAndUpdate([int? value]) async {
   await HomeWidget.saveWidgetData(_countKey, value);
-  await HomeWidget.renderFlutterWidget(
-    DashWithSign(count: value ?? 0),
-    key: 'dash_counter',
-    logicalSize: const Size(100, 100),
-  );
+  // await HomeWidget.renderFlutterWidget(
+  //   DashWithSign(count: value ?? 0),
+  //   key: 'dash_counter',
+  //   logicalSize: const Size(100, 100),
+  // );
   await HomeWidget.updateWidget(
     iOSName: 'CounterWidget',
     androidName: 'CounterWidgetProvider',
@@ -92,7 +92,29 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void initState() {
     super.initState();
+    HomeWidget.setAppGroupId('group.singularityapp');
+    _checkForWidgetLaunch();
+    HomeWidget.registerInteractivityCallback(interactiveCallback);
     WidgetsBinding.instance.addObserver(this);
+    // _checkForWidgetLaunch();
+    // HomeWidget.widgetClicked.listen((uri) {
+    //   // logger.log('myappState','new call is $uri');
+    //   if(uri!=null){
+    //     interactiveCallback(uri);
+    //   }
+    // });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // _checkForWidgetLaunch();
+    HomeWidget.widgetClicked.listen((uri) {
+      // logger.log('myappState','new call is $uri');
+      if(uri!=null){
+        interactiveCallback(uri);
+      }
+    });
   }
 
   Future<void> _incrementCounter() async {
@@ -112,6 +134,14 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     super.dispose();
+  }
+
+  void _checkForWidgetLaunch() {
+    HomeWidget.initiallyLaunchedFromHomeWidget().then((uri) {
+      if(uri!=null){
+        interactiveCallback(uri);
+      }
+    });
   }
 
   @override

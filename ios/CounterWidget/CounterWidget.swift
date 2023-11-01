@@ -15,7 +15,8 @@ struct Provider: TimelineProvider {
 
   func getSnapshot(in context: Context, completion: @escaping (CounterEntry) -> Void) {
     // Get the UserDefaults for the AppGroup
-    let prefs = UserDefaults(suiteName: "group.es.antonborri.homeWidgetCounter")
+    let prefs = UserDefaults(suiteName: "group.singularityapp")
+      print(prefs?.integer(forKey: "counter"))
     // Load the current Count
     let entry = CounterEntry(date: Date(), count: prefs?.integer(forKey: "counter") ?? 0)
     completion(entry)
@@ -40,15 +41,15 @@ struct CounterWidgetEntryView: View {
   @Environment(\.widgetFamily) var family
 
   var body: some View {
-    if family == .accessoryCircular {
-      Image(
-        uiImage: UIImage(
-          contentsOfFile: UserDefaults(suiteName: "group.es.antonborri.homeWidgetCounter")?.string(
-            forKey: "dash_counter") ?? "")!
-      ).resizable()
-        .frame(width: 76, height: 76)
-        .scaledToFill()
-    } else {
+//    if family == .accessoryCircular {
+//      Image(
+//        uiImage: UIImage(
+//          contentsOfFile: UserDefaults(suiteName: "group.es.antonborri.homeWidgetCounter")?.string(
+//            forKey: "dash_counter") ?? "")!
+//      ).resizable()
+//        .frame(width: 76, height: 76)
+//        .scaledToFill()
+//    } else {
       VStack {
         Text("You have pushed the button this many times:").font(.caption2).frame(
           maxWidth: .infinity, alignment: .center)
@@ -72,7 +73,7 @@ struct CounterWidgetEntryView: View {
         }
       }
     }
-  }
+//  }
 }
 
 struct CounterWidget: Widget {
@@ -92,7 +93,7 @@ struct CounterWidget: Widget {
     .configurationDisplayName("Counter Widget")
     .description("Count the Number Up")
     .supportedFamilies([
-      .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge, .accessoryCircular,
+        .systemMedium,
     ])
   }
 }
