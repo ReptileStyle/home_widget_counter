@@ -15,7 +15,7 @@ dependencies:
   home_widget:
     git:
       url: https://github.com/ReptileStyle/home_widget.git
-      ref: v0.4.0-alpha1
+      ref: dev
 
 dev_dependencies:
   flutter_test:

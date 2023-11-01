@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:home_widget/home_widget.dart';
 import 'package:home_widget_counter/dash_with_sign.dart';
@@ -89,12 +91,14 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
+  StreamSubscription? uriSub;
+
   @override
   void initState() {
     super.initState();
     HomeWidget.setAppGroupId('group.singularityapp');
+    // HomeWidget.registerInteractivityCallback(interactiveCallback);
     _checkForWidgetLaunch();
-    HomeWidget.registerInteractivityCallback(interactiveCallback);
     WidgetsBinding.instance.addObserver(this);
     // _checkForWidgetLaunch();
     // HomeWidget.widgetClicked.listen((uri) {
@@ -109,11 +113,13 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // _checkForWidgetLaunch();
-    HomeWidget.widgetClicked.listen((uri) {
-      // logger.log('myappState','new call is $uri');
-      if(uri!=null){
-        interactiveCallback(uri);
-      }
+    uriSub?.cancel().whenComplete(() {
+      uriSub =     HomeWidget.widgetClicked.listen((uri) {
+        // logger.log('myappState','new call is $uri');
+        if(uri!=null){
+          interactiveCallback(uri);
+        }
+      });
     });
   }
 
@@ -133,6 +139,7 @@ class _MyHomePageState extends State<MyHomePage> with WidgetsBindingObserver {
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    uriSub?.cancel();
     super.dispose();
   }
 
